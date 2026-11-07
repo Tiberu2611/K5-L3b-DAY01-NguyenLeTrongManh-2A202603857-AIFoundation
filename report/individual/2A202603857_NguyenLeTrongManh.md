@@ -16,7 +16,26 @@
 
 ## 2. Kết quả chính
 
-*Chép bảng so sánh cuối Phần 5 (F1 test, F1 SUB 40, p95 ms/tin, USD/1k tin) của chính bạn.*
+| Phương án | precision | recall | F1 (test) | F1 (SUB 40) | train (s) | tin/s (cả lô) | p50 ms/tin | p95 ms/tin | USD / 1k tin |
+|---|---|---|---|---|---|---|---|---|---|
+| 1. BoW + LogReg (tự code) | 0.984 | 0.643 | 0.778 | 0.667 | 7.500 | 20295.876 | 0.066 | 0.333 | 0.0 |
+| 2. BoW + MLP (deep learning) | 0.963 | 0.806 | 0.878 | 0.857 | 8.481 | 13984.444 | 0.257 | 3.567 | 0.0 |
+| 3a. Encoder (MiniLM) + kNN | 0.880 | 0.898 | 0.889 | 0.950 | 81.851 | 33.820 | 44.012 | 63.011 | 0.0 |
+| 3b. Encoder (MiniLM) + LogReg | 0.934 | 0.867 | 0.899 | 0.974 | 82.393 | 41.773 | 63.032 | 129.179 | 0.0 |
+| 3c. Encoder (MiniLM) + MLP head | 0.944 | 0.867 | 0.904 | 0.974 | 84.188 | 26.172 | 51.846 | 107.564 | 0.0 |
+| 4a. LLM nhỏ zero-shot | 0.870 | 1.000 | 0.930* | 0.930 | 0.000 | 0.134 | 7084.191 | 11961.602 | 0.0** |
+| 4b. LLM lớn zero-shot | 0.909 | 1.000 | 0.952* | 0.952 | 0.000 | 0.118 | 7299.141 | 16891.313 | 0.0** |
+| 4c. LLM nhỏ few-shot | 1.000 | 0.950 | 0.974* | 0.974 | 0.000 | 0.115 | 7372.048 | 13307.597 | 0.0** |
+
+\* Các hàng LLM chỉ chạy trên tập SUB (40 tin cân bằng), nên cột "F1 (test)" của chúng bằng F1 (SUB 40). Khi so sánh chất lượng giữa các cách, dùng cột **F1 (SUB 40)**.
+
+\*\* Chi phí LLM trong bảng ghi 0.0 do tên model qua proxy không có trong bảng giá của notebook. Tính tay với gpt-6-luna (100 token vào, 1 token ra): khoảng $0.0105 / 1k tin.
+
+Ghi chú đo đạc:
+- Inference đo từ văn bản thô đến nhãn (gồm cả vectorize/encode); p50/p95 là khi gọi từng tin một.
+- `train (s)` của nhóm 3 là thời gian encoder MiniLM encode tập train cộng thời gian train đầu phân loại; LLM không train nên bằng 0.
+- Độ trễ LLM đo qua proxy nên chỉ mang tính tham khảo. Số đo phụ thuộc CPU/GPU của Colab.
+- Tập SUB chỉ 40 tin: một tin sai đổi F1 vài điểm, chênh dưới khoảng 0.05 nên coi là hoà.
 
 ## 3. Dự đoán và thực tế
 
